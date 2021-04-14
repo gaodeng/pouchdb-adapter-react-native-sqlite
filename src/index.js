@@ -1,9 +1,7 @@
-'use strict';
+'use strict'
 
-var pouchdbUtils = require('pouchdb-utils');
-
-var WebSqlPouchCore = require('pouchdb-adapter-websql-core');
-var sqlite = null;
+var WebSqlPouchCore = require('pouchdb-adapter-websql-core')
+var sqlite = null
 
 function createOpenDBFunction (opts) {
   return function (name, version, description, size) {
@@ -12,16 +10,16 @@ function createOpenDBFunction (opts) {
     // It's better to just use their "new" format and pass in a big ol'
     // options object. Also there are many options here that may come from
     // the PouchDB constructor, so we have to grab those.
-    var openOpts = pouchdbUtils.assign({}, opts, {
+    var openOpts = Object.assign({}, opts, {
       name: name,
       version: version,
       description: description,
       size: size
-    });
+    })
     function onError (err) {
-      console.error(err);
+      console.error(err)
       if (typeof opts.onError === 'function') {
-        opts.onError(err);
+        opts.onError(err)
       }
     }
     return sqlite.openDatabase(openOpts.name, openOpts.version, openOpts.description, openOpts.size, null, onError)
@@ -29,29 +27,29 @@ function createOpenDBFunction (opts) {
 }
 
 function ReactNativeSQLitePouch (opts, callback) {
-  var websql = createOpenDBFunction(opts);
-  var _opts = pouchdbUtils.assign({
+  var websql = createOpenDBFunction(opts)
+  var _opts = Object.assign({
     websql: websql
-  }, opts);
+  }, opts)
 
-  WebSqlPouchCore.call(this, _opts, callback);
+  WebSqlPouchCore.call(this, _opts, callback)
 }
 
 ReactNativeSQLitePouch.valid = function () {
   // if you're using ReactNative, we assume you know what you're doing because you control the environment
   return true
-};
+}
 
 // no need for a prefix in ReactNative (i.e. no need for `_pouch_` prefix
-ReactNativeSQLitePouch.use_prefix = false;
+ReactNativeSQLitePouch.use_prefix = false
 
 function reactNativeSqlitePlugin (PouchDB) {
-  PouchDB.adapter('react-native-sqlite', ReactNativeSQLitePouch, true);
+  PouchDB.adapter('react-native-sqlite', ReactNativeSQLitePouch, true)
 }
 
 function createPlugin (SQLite) {
-  sqlite = SQLite;
+  sqlite = SQLite
   return reactNativeSqlitePlugin
 }
 
-module.exports = createPlugin;
+module.exports = createPlugin
